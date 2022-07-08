@@ -6,7 +6,7 @@
 /*   By: mdkhissi <mdkhissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 15:54:35 by mdkhissi          #+#    #+#             */
-/*   Updated: 2022/07/07 23:03:57 by mdkhissi         ###   ########.fr       */
+/*   Updated: 2022/07/08 21:10:32 by mdkhissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,11 +102,29 @@ void	cmdarg_init(int n, t_cmd *data, char **env)
 		data->cmd_path[i++] = NULL;
 	data->pips = malloc ((n - 1) * sizeof(t_pipex));
 	data->envr = env;
-	//data->pid = -1;
 }
 
-void	cmdarg_free(t_cmd *data, int n)
+void	cmdarg_free(t_cmd *data, int i, int n)
 {
-	(void )data;
-	(void )n;
+	int	j;
+
+	//if (n == 1 || n == 0)
+	//{
+		//free_arraystr(data->cmd_path);
+		j = 0;
+		(void)i;
+		while (j < n)
+		{
+			//if (j != i)
+			//{
+				free_arraystr(data->cmd_args[j]);
+				j++;
+			//}
+		}
+	//}
+	/*if (n == 2 || n == 0)
+	{
+		free_arraystr(data->cmd_path);
+		free_arraystr(data->cmd_args[i]);
+	}*/
 }

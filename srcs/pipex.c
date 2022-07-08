@@ -6,7 +6,7 @@
 /*   By: mdkhissi <mdkhissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/24 18:32:50 by mdkhissi          #+#    #+#             */
-/*   Updated: 2022/07/08 16:14:40 by mdkhissi         ###   ########.fr       */
+/*   Updated: 2022/07/08 20:53:31 by mdkhissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,16 @@ void	run_cmd(char **lst, t_cmd *data, int i, int n)
 	int		foutput;
 	int		r;
 	int		w;
+	int		j;
 
 	//cmdarg_free(data, 2);
-	sleep(3);
+	//sleep(3);
 	if (i == 0)
 	{
 		finput = open(lst[0], O_RDONLY);
 		if (finput < 0)
 		{
-			//cmdarg_free(data, 1);
+			//cmdarg_free(data, i, 2);
 			perrxit("Error");
 		}
 	}
@@ -35,7 +36,7 @@ void	run_cmd(char **lst, t_cmd *data, int i, int n)
 		foutput = open(lst[n + 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
 		if (foutput < 0)
 		{
-			//cmdarg_free(data, 2);
+			//cmdarg_free(data, i, 2);
 			perrxit("Error");
 		}
 	}
@@ -43,26 +44,45 @@ void	run_cmd(char **lst, t_cmd *data, int i, int n)
 		r = i;
 	else
 		r = i - 1;
-	if (n - 1)
+	if (i == n - 1)
 		w = i - 1;
 	else
 		w = i;
+	//printf("i=%d\tr = %d\tw = %d\n",i, r, w);
 	if (i == 0)
+	{
 		dup2(finput,STDIN_FILENO);
+		close(finput);
+	}
 	else
 		dup2(data->pips[r].fd[0], STDIN_FILENO);
-	close(data->pips[r].fd[0]);
+	j = 0;
+	while (j <= r)
+	{
+		close(data->pips[j].fd[0]);
+		j++;
+	}
+	
 	
 	if (i == n - 1)
+	{
 		dup2(foutput, STDOUT_FILENO);
+		close(foutput);
+	}
 	else
 	{
 		dup2(data->pips[w].fd[1], STDOUT_FILENO);
 	}
-	close(data->pips[w].fd[1]);
+	j = 0;
+	while (j <= w)
+	{
+		close(data->pips[j].fd[1]);
+		j++;
+	}
+	
 	if (execve(data->cmd_path[i], data->cmd_args[i], data->envr) == -1)
 	{
-		//cmdarg_free(data, 1);
+		//cmdarg_free(data, i, 2);
 		if (!data->cmd_path[i])
 			cmd_notfound();
 		else
@@ -85,9 +105,9 @@ void	pipex(int n, char **lst, char **env)
 	{
 		get_path(lst, &data, i);
 		j = 0;
-		while (data.cmd_args[j])
+		while (data.cmd_args[i][j])
 		{
-			printf("data: %s\n", data.cmd_args[i][j]);
+			//printf("i = %d\tdata: %s\n", i, data.cmd_args[i][j]);
 			j++;
 		}
 		i++;
@@ -95,15 +115,19 @@ void	pipex(int n, char **lst, char **env)
 	i = 0;
 	while (i < n_cmd)
 	{
-		if (i < n_cmd - 1 && pipe(data.pips[i].fd) == (-1))
+		if (i < n_cmd - 1)
 		{
-			//cmdarg_free(&data, 0);
-			perrxit("Error");
+			//printf("pippp\n");
+			if (pipe(data.pips[i].fd) == (-1))
+			{
+				cmdarg_free(&data, i, 2);
+				perrxit("Error");
+			}
 		}
 		pid = fork();
 		if (pid == (-1))
 		{
-			//cmdarg_free(&data, 0);
+			cmdarg_free(&data, i, 2);
 			perrxit("Error");
 		}
 		else if (pid == 0)
@@ -111,6 +135,7 @@ void	pipex(int n, char **lst, char **env)
 		else
 			i++;
 	}
+	cmdarg_free(&data, i, n_cmd);
 	i = 0;
 	while (i < n_cmd)
 	{
@@ -122,4 +147,6 @@ void	pipex(int n, char **lst, char **env)
 		wait(NULL);
 		i++;
 	}
+		//free(data.pips);
+
 }
