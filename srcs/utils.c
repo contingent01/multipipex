@@ -6,7 +6,7 @@
 /*   By: mdkhissi <mdkhissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/22 17:41:47 by mdkhissi          #+#    #+#             */
-/*   Updated: 2021/11/04 16:06:16 by mdkhissi         ###   ########.fr       */
+/*   Updated: 2022/07/08 23:57:45 by mdkhissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ void	free_arraystr(char **arraystr)
 	if (arraystr)
 	{
 		while (arraystr[i] != NULL)
+		{
+			//printf("plz %d : %s\n", i, arraystr[i]);
 			free(arraystr[i++]);
+		}
 		free(arraystr);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: mdkhissi <mdkhissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/24 18:32:50 by mdkhissi          #+#    #+#             */
-/*   Updated: 2022/07/08 20:53:31 by mdkhissi         ###   ########.fr       */
+/*   Updated: 2022/07/09 00:05:10 by mdkhissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	run_cmd(char **lst, t_cmd *data, int i, int n)
 		finput = open(lst[0], O_RDONLY);
 		if (finput < 0)
 		{
-			//cmdarg_free(data, i, 2);
+			cmdarg_free(data, i, n);
 			perrxit("Error");
 		}
 	}
@@ -36,7 +36,7 @@ void	run_cmd(char **lst, t_cmd *data, int i, int n)
 		foutput = open(lst[n + 1], O_RDWR | O_CREAT | O_TRUNC, 0644);
 		if (foutput < 0)
 		{
-			//cmdarg_free(data, i, 2);
+			cmdarg_free(data, i, n);
 			perrxit("Error");
 		}
 	}
@@ -82,7 +82,7 @@ void	run_cmd(char **lst, t_cmd *data, int i, int n)
 	
 	if (execve(data->cmd_path[i], data->cmd_args[i], data->envr) == -1)
 	{
-		//cmdarg_free(data, i, 2);
+		cmdarg_free(data, i, n);
 		if (!data->cmd_path[i])
 			cmd_notfound();
 		else
@@ -99,6 +99,7 @@ void	pipex(int n, char **lst, char **env)
 	int		j;
 
 	n_cmd = n - 2;
+	printf("%d\n", n_cmd);
 	cmdarg_init(n_cmd, &data, env);
 	i = 0;
 	while (i < n_cmd)
@@ -120,14 +121,14 @@ void	pipex(int n, char **lst, char **env)
 			//printf("pippp\n");
 			if (pipe(data.pips[i].fd) == (-1))
 			{
-				cmdarg_free(&data, i, 2);
+				cmdarg_free(&data, i, n_cmd);
 				perrxit("Error");
 			}
 		}
 		pid = fork();
 		if (pid == (-1))
 		{
-			cmdarg_free(&data, i, 2);
+			cmdarg_free(&data, i, n_cmd);
 			perrxit("Error");
 		}
 		else if (pid == 0)
@@ -147,6 +148,6 @@ void	pipex(int n, char **lst, char **env)
 		wait(NULL);
 		i++;
 	}
-		//free(data.pips);
+	free(data.pips);
 
 }
