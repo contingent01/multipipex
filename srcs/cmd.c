@@ -6,7 +6,7 @@
 /*   By: mdkhissi <mdkhissi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/04 15:54:35 by mdkhissi          #+#    #+#             */
-/*   Updated: 2022/07/07 18:32:53 by mdkhissi         ###   ########.fr       */
+/*   Updated: 2022/07/07 23:03:57 by mdkhissi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	cmdarg_init(int n, t_cmd *data, char **env)
 	data->cmd_path = malloc(n * sizeof(char *));
 	i = 0;
 	while (i < n)
-		data->cmd_path[i] = NULL;
+		data->cmd_path[i++] = NULL;
 	data->pips = malloc ((n - 1) * sizeof(t_pipex));
 	data->envr = env;
 	//data->pid = -1;

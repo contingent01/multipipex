@@ -6,38 +6,68 @@
 #    By: mdkhissi <mdkhissi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/10/26 19:38:36 by mdkhissi          #+#    #+#              #
-#    Updated: 2021/11/04 16:07:58 by mdkhissi         ###   ########.fr        #
+#    Updated: 2022/07/07 23:28:37 by mdkhissi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = pipex
+NAME 		= pipex
 
-SRCS = srcs/main.c srcs/pipex.c srcs/utils.c srcs/ft_split.c srcs/strutils.c srcs/cmd.c
+# ----------- COMPILER FLAGS -------
+CC			= clang
+CFLAGS		= -Wall -Wextra -Werror
 
-OBJS = ${SRCS:.c=.o}
+# ----------- INCLUDE --------------
+HEADER		= includes
+INCLUDE		= -I $(HEADER)
 
-HEADER = includes
+# ----------- FILES ----------------
+SRC			= srcs
+OBJ			= obj
+SRCS		= $(SRC)/main.c $(SRC)/pipex.c $(SRC)/utils.c $(SRC)/ft_split.c $(SRC)/strutils.c $(SRC)/cmd.c
+OBJS		= $(patsubst $(SRC)/%.c, $(OBJ)/%.o,$(SRCS))
 
-CC = clang
+# ----------- COLORS ---------------
+BLACK		= \033[1;30m
+RED			= \033[1;31m
+GREEN		= \033[1;32m
+PURPLE		= \033[1;35m
+CYAN		= \033[1;36m
+WHITE		= \033[1;37m
+EOC			= \033[0;0m
 
-CFLAGS = -Wall -Wextra -Werror
+# ----------- RULES ----------------
+all			: ${NAME}
+$(NAME)		: ${OBJS}
+	@echo -e "$(RED) =========> Compiling object files.............DONE √\n"
+	@echo -e "$(WHITE)"
+		${CC} -o ${NAME} ${OBJS}
+	@echo -e "$(RED) =========> Building push_swap.............DONE √\n"
 
-RM = rm -f
+$(OBJ)/%.o	: $(SRC)/%.c | $(OBJ) compiling
+		$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
+$(OBJ)		:
+	@echo -e "$(PURPLE)"
+		mkdir $@
 
-.c.o:
-	${CC} ${CFLAGS} -I ${HEADER} -c $< -o ${<:.c=.o}
-
-all : ${NAME}
-$(NAME): ${OBJS}
-	${CC} -o ${NAME} ${OBJS}
-
+compiling	:
+	@echo -e "$(WHITE)"
+	
 clean:
-	${RM} ${OBJS}
+	@echo -e "$(PURPLE)"
+		-rm -rf ${OBJ}
+	@echo -e "$(RED) =========> Deleting object files.............DONE √\n"
 
 fclean: clean
-	${RM} ${NAME}
+	@echo -e "$(PURPLE)"
+		-rm -f ${NAME}
+	@echo -e "$(RED) =========> Deleting executable.............DONE √\n"
 
 re:		fclean all
 
-.PHONY: all clean fclean re
+norm		:
+	@echo -e "$(CYAN)"
+		norminette $(SRC) $(HEADER)
+	@echo -e "$(RED) =========> Checking the norminette.............DONE √\n"
+
+.PHONY: all clean fclean re norm
